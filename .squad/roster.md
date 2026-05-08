@@ -8,6 +8,16 @@
 |------|------|-------|
 | Squad | Coordinator | Routes work, enforces handoffs and reviewer gates. Does not generate domain artifacts. |
 
+## Always-On Members (mandatory in every casting)
+
+| Name | Role | Charter | Status |
+|------|------|---------|--------|
+| Developer | Human approval gate | `.squad/agents/developer/charter.md` | 🧑‍💻 Required approver — every plan & change |
+| Handbook | Documentation & Knowledge Base | `.squad/agents/handbook/charter.md` | 📚 Always-on — runs after every task |
+| JiraCom  | Jira ticket lifecycle | `.squad/agents/jiracom/charter.md`  | 🎫 Always-on — syncs every ticket-tracked task |
+| Scribe   | Session Logger | `.squad/agents/scribe/charter.md`   | 📋 Silent background |
+| Ralph    | Work Monitor | — | 🔄 Monitor |
+
 ## Members
 
 | Name | Role | Charter | Status |
@@ -16,8 +26,6 @@
 | {Name} | {Role} | `.squad/agents/{name}/charter.md` | ✅ Active |
 | {Name} | {Role} | `.squad/agents/{name}/charter.md` | ✅ Active |
 | {Name} | {Role} | `.squad/agents/{name}/charter.md` | ✅ Active |
-| Scribe | Session Logger | `.squad/agents/scribe/charter.md` | 📋 Silent |
-| Ralph | Work Monitor | — | 🔄 Monitor |
 
 ## Coding Agent
 
@@ -29,7 +37,9 @@
 
 ### Capabilities
 
-**🟢 Good fit — auto-route when enabled:**
+> ⚠ **Every category below is gated by Developer approval and TDD discipline** (see `.squad/copilot-instructions.md`). The tiers describe routing only, not exemption from the gates.
+
+**🟢 Good fit — auto-route when enabled (still requires plan approval & a failing test first):**
 - Bug fixes with clear reproduction steps
 - Test coverage (adding missing tests, fixing flaky tests)
 - Lint/format fixes and code style cleanup

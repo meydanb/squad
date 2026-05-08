@@ -31,7 +31,9 @@
 | VOX | REPL & Interactive Shell | `.squad/agents/vox/charter.md` | ✅ Active |
 | DSKY | TUI Engineer | `.squad/agents/dsky/charter.md` | ✅ Active |
 | Sims | E2E Test Engineer | `.squad/agents/sims/charter.md` | ✅ Active |
-| Handbook | SDK Usability | `.squad/agents/handbook/charter.md` | ✅ Active |
+| Developer | Human approval gate | `.squad/agents/developer/charter.md` | 🧑‍💻 Required approver — every plan & change |
+| JiraCom | Jira ticket lifecycle (on-prem PAT) | `.squad/agents/jiracom/charter.md` | 🎫 Always-on for ticket-tracked work |
+| Handbook | Documentation & Knowledge Base | `.squad/agents/handbook/charter.md` | 📚 Always-on — runs after every task |
 | Scribe | Session Logger | `.squad/agents/scribe/charter.md` | 📋 Silent |
 | Ralph | Work Monitor | — | 🔄 Monitor |
 

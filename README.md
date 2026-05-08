@@ -1,8 +1,27 @@
-# Squad
+# Squad — `meydanb` fork
 
 [English](README.md) | [中文](README.zh.md)
 
 **Human-led AI agent teams for any project.** One command. A team that helps you move faster with your code.
+
+> 🔱 **This is a customized fork** of [bradygaster/squad](https://github.com/bradygaster/squad).
+> See [Customizations in this fork](#customizations-in-this-fork) below for what's different.
+
+## Customizations in this fork
+
+This fork adds four hard gates to the default squad behavior. They are enforced via `.squad-templates/copilot-instructions.md`, `.squad-templates/ceremonies.md`, and the new `developer` / `jiracom` agents. They cannot be disabled per-task.
+
+1. **🧑‍💻 Developer-in-the-loop** — A new `developer` member ([charter](./.squad/agents/developer/charter.md)) gates every plan and every change. No agent may execute a plan, merge, push, transition a Jira issue, or run destructive commands without an explicit `Approved-by: developer` recorded in `.squad/decisions.md`.
+2. **🔴🟢🟦 TDD always** — Every code-bearing task follows red → green → refactor. A failing test must be committed (or its failure captured) **before** any production code. PRs include either the failing-test commit SHA or a CI link. See the *TDD Discipline* ceremony in [`.squad/ceremonies.md`](./.squad/ceremonies.md).
+3. **🎫 Jira on-prem (PAT) integration** — A new `jiracom` member ([charter](./.squad/agents/jiracom/charter.md)) owns Jira ticket lifecycle, backed by the new [`atlassian-rest`](./.squad-templates/skills/atlassian-rest/SKILL.md) skill. The skill is **on-prem only** (Jira Server / Data Center, `/rest/api/2/*`, Bearer PAT auth). One-time setup:
+   ```bash
+   node .squad/skills/atlassian-rest/scripts/setup.mjs
+   # prompts for JIRA_BASE_URL and JIRA_PAT, writes .squad/.env (chmod 600, gitignored)
+   ```
+   Confluence is intentionally out of scope in this fork — Jira only.
+4. **📚 Always-on Documentation/KB** — `handbook` is upgraded to an always-on member that runs after every task. Merges are blocked if docs / knowledge-base entries are missing.
+
+These are seeded into new projects via `.squad-templates/` (used by `squad init`) and applied to this repo's own self-hosted team in `.squad/`.
 
 [![Status](https://img.shields.io/badge/status-alpha-blueviolet)](#status)
 [![Platform](https://img.shields.io/badge/platform-GitHub%20Copilot-blue)](#what-is-squad)
