@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Fork divergence — `meydanb/squad`]
 
-> Forked from [bradygaster/squad@`v0.9.4`](https://github.com/bradygaster/squad/releases/tag/v0.9.4) on 2026-05-08. The four changes below introduce **hard gates** that apply to every task in this fork — they cannot be disabled per-task and they replace the corresponding upstream defaults.
+> Forked from [bradygaster/squad@`v0.9.4`](https://github.com/bradygaster/squad/releases/tag/v0.9.4) on 2026-05-08. The five changes below introduce **hard gates** that apply to every task in this fork — they cannot be disabled per-task and they replace the corresponding upstream defaults.
 
 ### Added — Developer-in-the-loop hard gate
 - **New `developer` member** at `.squad/agents/developer/` representing the real human user. Owns plan approval, change approval, destructive-action approval, and final escalation.
@@ -37,6 +37,16 @@ All notable changes to this project will be documented in this file.
   - **`scripts/jira.mjs`** — CLI surface: `search`, `get`, `create`, `edit`, `comment`, `transitions`, `transition`, `link`. Includes 429 backoff (3 attempts, exponential).
 - **Jira Sync ceremony** in `.squad/ceremonies.md` — auto-comment PR link on ticket pickup, transition on merge.
 - **Confluence intentionally out of scope** in this fork (compared to the bmad-labs original, which includes both).
+
+### Added — Git Discipline hard gate (Flight enforces)
+- **Flight charter extended** — `.squad/agents/flight/charter.md` now explicitly owns git workflow enforcement; new *Git Discipline* section codifies the rules. Flight blocks any PR that violates them.
+- **Git Discipline ceremony** in `.squad/ceremonies.md` (mirrored to `.squad-templates/ceremonies.md`) — hard gate triggered before branch creation, before push, and before merge, with three explicit checklists.
+- **Branching rules:** no direct commits to the default branch; always `git fetch && git checkout main && git pull --ff-only` before creating a feature branch; one concern per branch; `squad/{issue}-{slug}` naming.
+- **Sync rules:** branch must be current with `origin/main` before opening a PR (rebase preferred for personal branches; merge `--no-ff` acceptable for shared); re-sync if `main` advances during review.
+- **Push rules:** no `--no-verify` / `--no-gpg-sign` / hook bypass without `Approved-by: developer`; force-push is `--force-with-lease` only and only on personal branches — never on `main` or `release/*`.
+- **Commit rules:** atomic commits; imperative subject ≤ 72 chars; body explains *why*; reference issue in subject or footer (`Closes #N`, `Refs PROJ-123`); never amend or rebase commits already on shared branches.
+- **Destructive operations** (`reset --hard`, `clean -fd`, force-push to shared, branch deletion, editing `.git/config` to disable hooks) require an explicit `Approved-by: developer` filed in `.squad/decisions/inbox/`.
+- **`copilot-instructions.md` updated** — Hard Gates preamble now lists five gates (added 🌿 Git discipline). The TDD gate already required a failing-test commit to precede the implementation commit; Flight now enforces this at the git-history level too.
 
 ### Changed — Handbook upgraded to always-on Documentation/KB owner
 - **`.squad/agents/handbook/charter.md`** — role expanded from "SDK Usability" to "Documentation & Knowledge Base owner; SDK Usability." Mode switched to **always-on**: spawned automatically on every task close.

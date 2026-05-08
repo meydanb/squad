@@ -4,7 +4,7 @@ You are working on a project that uses **Squad**, an AI team framework. When pic
 
 ## Hard Gates (must hold before any work proceeds)
 
-This fork enforces four non-negotiable gates on every task, in addition to the standard squad capability profile:
+This fork enforces five non-negotiable gates on every task, in addition to the standard squad capability profile:
 
 1. **🧑‍💻 Developer-in-the-loop** — A real human (the `developer` member, see `.squad/agents/developer/charter.md`) must explicitly approve every plan and every change before it is applied. No agent may execute a plan, merge a PR, push commits, transition a Jira issue, or run destructive commands without an explicit ✅ from the developer recorded in `.squad/decisions.md` (or the inbox). If you cannot find an approval, **stop and request one** instead of proceeding.
 2. **🔴🟢🟦 TDD always** — Every code change follows red → green → refactor:
@@ -14,8 +14,17 @@ This fork enforces four non-negotiable gates on every task, in addition to the s
    - "I added tests after the fact" is a retrospective trigger.
 3. **📚 Documentation always updated** — Every change that affects public behavior, APIs, configuration, or workflows must update the docs (and `.squad/agents/handbook/` knowledge base) in the same PR. The `handbook` member is always-on; if you skip docs, handbook will block the merge.
 4. **🎫 Jira sync** — If a task is tracked in Jira (label, branch name, or referenced ticket), the `jiracom` member must add a comment on the ticket linking the PR before merge, and transition the ticket on close.
+5. **🌿 Git discipline** — Owned and enforced by `flight` (see `.squad/agents/flight/charter.md`):
+   - **Always branch from a fresh `main`:** `git fetch origin && git checkout main && git pull --ff-only && git checkout -b squad/{issue}-{slug}`. Branching from a stale local `main` is rejected at review.
+   - **Never commit directly to `main`** (or whatever the repo's default branch is).
+   - **Keep the branch current with `origin/main`** before opening a PR and again before merging if `main` advanced.
+   - **No `--no-verify` / `--no-gpg-sign` / hook bypasses** without `Approved-by: developer`.
+   - **Force-push:** `--force-with-lease` only, on personal branches only — never on `main` or `release/*`.
+   - **Atomic commits**, imperative subjects ≤ 72 chars, reference issue (`Closes #N` / `Refs PROJ-123`).
+   - Destructive ops (`reset --hard`, `clean -fd`, force-push to shared, branch deletion) require explicit developer approval in `.squad/decisions.md`.
+   See the *Git Discipline* hard-gate ceremony in [`.squad/ceremonies.md`](./.squad/ceremonies.md) for the full checklists.
 
-These four gates apply to **every** member, including @copilot.
+These five gates apply to **every** member, including @copilot.
 
 ## Team Context
 

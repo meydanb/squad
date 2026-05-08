@@ -2,7 +2,7 @@
 
 > Team meetings that happen before or after work. Each squad configures their own.
 >
-> The four ceremonies marked **🚦 Hard Gate** below are non-negotiable in this fork — they cannot be disabled per-task. They enforce: developer-in-the-loop approval, TDD discipline, always-on documentation, and Jira sync.
+> The five ceremonies marked **🚦 Hard Gate** below are non-negotiable in this fork — they cannot be disabled per-task. They enforce: developer-in-the-loop approval, TDD discipline, always-on documentation, Jira sync, and git discipline.
 
 ## 🚦 Developer Approval — Hard Gate
 
@@ -94,6 +94,41 @@
 2. On PR open, `jiracom` adds a comment to the ticket linking the PR.
 3. On merge, `jiracom` transitions the ticket to Done (or the project's equivalent).
 4. If the PAT or base URL is missing, `jiracom` asks the developer to run `squad jira auth login` (or, as a fallback, `node .squad/skills/atlassian-rest/scripts/setup.mjs`) before proceeding.
+
+---
+
+## 🚦 Git Discipline — Hard Gate
+
+| Field | Value |
+|-------|-------|
+| **Trigger** | auto |
+| **When** | before branch creation, before push, before merge |
+| **Condition** | always (any task that touches version control) |
+| **Facilitator** | `flight` |
+| **Participants** | `flight` + acting member |
+| **Time budget** | minimal |
+| **Enabled** | ✅ yes (cannot disable) |
+| **Enforcement skill** | `git-discipline` |
+
+**Branch creation checklist** (Flight verifies before any work begins):
+1. `git fetch origin` — pull latest refs.
+2. `git checkout main && git pull --ff-only origin main` — never branch from a stale local `main`.
+3. `git checkout -b squad/{issue-number}-{kebab-case-slug}` — name follows the squad convention.
+4. One concern per branch. If the task grows, split it.
+
+**Pre-push checklist** (Flight verifies before push):
+1. Branch is up-to-date with `origin/main` (rebase preferred for personal branches; merge `--no-ff` acceptable for shared).
+2. No `--no-verify`, `--no-gpg-sign`, or other hook bypasses (unless developer-approved).
+3. Force-push? Only `--force-with-lease`, only on personal branches — **never on `main` or `release/*`**.
+4. Commits are atomic; subjects ≤ 72 chars, imperative, reference issue (`Closes #N` / `Refs PROJ-123`); body explains *why*.
+
+**Pre-merge checklist** (Flight verifies before merge):
+1. TDD: failing-test commit precedes implementation commit on the branch (or `tdd-exempt` justified).
+2. Branch is current with `main` after any new merges to `main` during PR review.
+3. Conflicts resolved by understanding both sides — never by `git checkout --theirs/--ours` blanket commands.
+4. Destructive operations (force-push to shared, `reset --hard`, `clean -fd`, branch deletion) require `Approved-by: developer` in `.squad/decisions.md`.
+
+**Why this exists:** dirty git history hides bugs and breaks bisect. Stale-base branches generate avoidable conflicts. Force-push on shared branches loses other people's work. Flight sees enough of these to make them everyone's problem.
 
 ---
 

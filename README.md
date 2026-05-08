@@ -9,7 +9,7 @@
 
 ## Customizations in this fork
 
-This fork adds four hard gates to the default squad behavior. They are enforced via `.squad-templates/copilot-instructions.md`, `.squad-templates/ceremonies.md`, and the new `developer` / `jiracom` agents. They cannot be disabled per-task.
+This fork adds five hard gates to the default squad behavior. They are enforced via `.squad-templates/copilot-instructions.md`, `.squad-templates/ceremonies.md`, the new `developer` / `jiracom` agents, and the extended `flight` charter. They cannot be disabled per-task.
 
 1. **🧑‍💻 Developer-in-the-loop** — A new `developer` member ([charter](./.squad/agents/developer/charter.md)) gates every plan and every change. No agent may execute a plan, merge, push, transition a Jira issue, or run destructive commands without an explicit `Approved-by: developer` recorded in `.squad/decisions.md`.
 2. **🔴🟢🟦 TDD always** — Every code-bearing task follows red → green → refactor. A failing test must be committed (or its failure captured) **before** any production code. PRs include either the failing-test commit SHA or a CI link. See the *TDD Discipline* ceremony in [`.squad/ceremonies.md`](./.squad/ceremonies.md).
@@ -24,6 +24,7 @@ This fork adds four hard gates to the default squad behavior. They are enforced 
    ```
    Credentials land in `.squad/.env` (chmod 600, gitignored). Confluence is intentionally out of scope in this fork — Jira only.
 4. **📚 Always-on Documentation/KB** — `handbook` is upgraded to an always-on member that runs after every task. Merges are blocked if docs / knowledge-base entries are missing.
+5. **🌿 Git discipline (Flight enforces)** — The team lead `flight` ([charter](./.squad/agents/flight/charter.md)) now owns git workflow enforcement. Hard rules: branch from a freshly-pulled `main` (`git fetch && git pull --ff-only && git checkout -b …`), never commit directly to the default branch, keep PRs current with `origin/main`, no `--no-verify` / hook bypasses, force-push only with `--force-with-lease` on personal branches, atomic commits with imperative ≤ 72-char subjects. Destructive ops require explicit developer approval. See the *Git Discipline* hard-gate ceremony in [`.squad/ceremonies.md`](./.squad/ceremonies.md).
 
 These are seeded into new projects via `.squad-templates/` (used by `squad init`) and applied to this repo's own self-hosted team in `.squad/`.
 
