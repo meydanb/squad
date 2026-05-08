@@ -223,6 +223,9 @@ async function main(): Promise<void> {
     console.log(`             Usage: nap [--deep] [--dry-run]`);
     console.log(`             Flags: --deep (thorough cleanup), --dry-run (preview only)`);
     console.log(`  ${BOLD}doctor${RESET}     Validate squad setup (check files, config, health)`);
+    console.log(`  ${BOLD}jira${RESET}       Authenticate with Jira on-prem (PAT) — fork-only`);
+    console.log(`             Usage: jira auth <login|status|logout>`);
+    console.log(`             Flags: --base-url <url>, --with-token <PAT>, --token-stdin`);
     console.log(`  ${BOLD}consult${RESET}    Enter consult mode with your personal squad`);
     console.log(`             Flags: --status, --check`);
     console.log(`  ${BOLD}extract${RESET}    Extract learnings from consult mode session`);
@@ -851,6 +854,13 @@ async function main(): Promise<void> {
   if (cmd === 'doctor') {
     const { doctorCommand } = await import('./cli/commands/doctor.js');
     await doctorCommand();
+    return;
+  }
+
+  if (cmd === 'jira') {
+    const { runJira } = await import('./cli/commands/jira.js');
+    const code = await runJira(args.slice(1));
+    if (code !== 0) process.exit(code);
     return;
   }
 

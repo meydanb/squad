@@ -42,17 +42,42 @@ The original `atlassian-rest` skill from [bmad-labs/skills](https://github.com/b
 
 ## Setup
 
-Run once per machine, before any Jira call:
+The recommended entry point is the `squad jira auth` command (modeled after `gh auth login`):
 
 ```
-node .squad/skills/atlassian-rest/scripts/setup.mjs
+squad jira auth login
 ```
 
 It prompts for:
 - `JIRA_BASE_URL` — full URL of your Jira instance (e.g., `https://jira.example.com`, no trailing slash)
 - `JIRA_PAT` — Personal Access Token from your Jira profile (`Profile → Personal Access Tokens → Create token`)
 
-Output is written to `.squad/.env` (gitignored). The skill loads `.squad/.env` automatically before each call.
+…verifies the credentials by calling `/rest/api/2/myself`, and writes them to `.squad/.env` (chmod 600, gitignored). The skill loads `.squad/.env` automatically before each call.
+
+**Non-interactive use** (CI, scripts):
+
+```
+echo "$JIRA_PAT" | squad jira auth login --base-url https://jira.example.com --token-stdin
+# or, if you must:
+squad jira auth login --base-url https://jira.example.com --with-token "$JIRA_PAT"
+```
+
+`--with-token` is convenient but the PAT will be visible in the process list — prefer `--token-stdin`.
+
+**Other auth subcommands:**
+
+```
+squad jira auth status    # show current auth, ping /myself, mask the token
+squad jira auth logout    # remove JIRA_BASE_URL and JIRA_PAT from .squad/.env
+```
+
+**Fallback (no squad CLI available):**
+
+```
+node .squad/skills/atlassian-rest/scripts/setup.mjs
+```
+
+The standalone script does the same prompt+verify+write flow and is kept for environments where the squad CLI isn't on PATH.
 
 > **Token scope:** the PAT must have `read` for the projects you care about and `write` for any project where JiraCom will create/edit/transition tickets. Verify with your Jira admin.
 

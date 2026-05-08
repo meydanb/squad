@@ -23,12 +23,17 @@ All notable changes to this project will be documented in this file.
 
 ### Added — Jira on-prem (PAT) integration
 - **New `jiracom` member** at `.squad/agents/jiracom/` — owns Jira ticket lifecycle, JQL queries, and PR↔ticket linkage.
+- **New `squad jira auth` CLI command** (`packages/squad-cli/src/cli/commands/jira.ts`) modeled after `gh auth login`:
+  - `squad jira auth login` — interactive prompt for URL + PAT, or non-interactive via `--base-url <url>` plus `--token-stdin` / `--with-token <PAT>`. Verifies via `/rest/api/2/myself` before writing.
+  - `squad jira auth status` — shows configured URL, masked PAT, and pings `/myself` (skip with `--skip-verify`).
+  - `squad jira auth logout` — clears `JIRA_BASE_URL` and `JIRA_PAT` from `.squad/.env`.
+  - Wired in `cli-entry.ts` and listed in `squad help`.
 - **New `atlassian-rest` skill** at `.squad-templates/skills/atlassian-rest/` (mirrored to `.squad/skills/atlassian-rest/`), ported from [bmad-labs/skills](https://github.com/bmad-labs/skills/blob/main/skills/atlassian-rest/SKILL.md) and modified for **on-prem only**:
   - **Auth:** `Authorization: Bearer <PAT>` (cloud original used Basic email+token).
   - **API version:** `/rest/api/2/*` (cloud original used `/rest/api/3/*` with ADF JSON).
   - **Description format:** wiki markup or plain text (no ADF).
   - **Env vars:** `JIRA_BASE_URL`, `JIRA_PAT` (loaded from `.squad/.env`, gitignored, chmod 600).
-  - **`scripts/setup.mjs`** — interactive one-time setup; verifies credentials against `/rest/api/2/myself` before writing `.env`.
+  - **`scripts/setup.mjs`** — kept as a fallback for environments without the squad CLI; same prompt+verify+write flow as `squad jira auth login`.
   - **`scripts/jira.mjs`** — CLI surface: `search`, `get`, `create`, `edit`, `comment`, `transitions`, `transition`, `link`. Includes 429 backoff (3 attempts, exponential).
 - **Jira Sync ceremony** in `.squad/ceremonies.md` — auto-comment PR link on ticket pickup, transition on merge.
 - **Confluence intentionally out of scope** in this fork (compared to the bmad-labs original, which includes both).

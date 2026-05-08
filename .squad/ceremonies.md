@@ -93,7 +93,7 @@
 1. On task pickup, `jiracom` confirms the Jira ticket exists and is in an in-progress state; transitions it if needed.
 2. On PR open, `jiracom` adds a comment to the ticket linking the PR.
 3. On merge, `jiracom` transitions the ticket to Done (or the project's equivalent).
-4. If the PAT or base URL is missing, `jiracom` runs `node .squad/skills/atlassian-rest/scripts/setup.mjs` and asks the developer for credentials before proceeding.
+4. If the PAT or base URL is missing, `jiracom` asks the developer to run `squad jira auth login` (or, as a fallback, `node .squad/skills/atlassian-rest/scripts/setup.mjs`) before proceeding.
 
 ---
 

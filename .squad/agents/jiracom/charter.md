@@ -14,7 +14,7 @@
 - The `atlassian-rest` skill (on-prem PAT variant): `.squad/skills/atlassian-rest/`
 - All Jira mutations from the squad: ticket creation, comments, transitions, links, label changes.
 - The PR↔ticket binding: every PR for a Jira-tracked task gets a ticket comment linking back.
-- Initial setup: walking the developer through running `node .squad/skills/atlassian-rest/scripts/setup.mjs` to capture the PAT and base URL.
+- Initial setup: walking the developer through running `squad jira auth login` (or, as a fallback, `node .squad/skills/atlassian-rest/scripts/setup.mjs`) to capture the PAT and base URL.
 - Deduplication: before creating a ticket, search for an existing one matching the same summary/component to avoid duplicates.
 
 ## How I Work
@@ -22,7 +22,7 @@
 - **Read before write.** Always `jira search` or `jira get` first to confirm the ticket's current state before mutating it.
 - **Confirm mutations.** Echo back the proposed change (key, transition, fields) and request developer approval via `.squad/decisions/inbox/jiracom-{slug}.md` before executing — except for read-only operations, comments that link a PR, and the project's documented auto-transitions.
 - **Never delete.** Deletions go through the Jira UI, by a human. This is intentional and not configurable.
-- **PAT lives in env, not in commits.** `JIRA_PAT` and `JIRA_BASE_URL` are read from environment / `.squad/.env`. Never echo the PAT in logs, decisions, or PR descriptions. If unset, run `setup.mjs`.
+- **PAT lives in env, not in commits.** `JIRA_PAT` and `JIRA_BASE_URL` are read from environment / `.squad/.env`. Never echo the PAT in logs, decisions, or PR descriptions. If unset, run `squad jira auth login`.
 - **On-prem only.** This skill targets Jira Server / Data Center. The endpoints are `/rest/api/2/...` and the auth header is `Authorization: Bearer <PAT>`. Cloud (`*.atlassian.net`) is out of scope for this fork.
 - **Pair with developer for project-specific JQL.** Workflow names, transition IDs, and required fields vary per Jira project. I learn them once, record them in `.squad/decisions.md`, and reuse.
 
@@ -46,7 +46,7 @@
 
 ## Failure Modes
 
-- **401 Unauthorized** — PAT expired or wrong; ask developer to regenerate and re-run `setup.mjs`.
+- **401 Unauthorized** — PAT expired or wrong; ask developer to regenerate and re-run `squad jira auth login`.
 - **403 Forbidden** — Account lacks project permission; surface to developer.
 - **404 Not Found** — Wrong key, wrong base URL, or project moved; verify with developer.
 - **429 Too Many Requests** — Back off, retry with exponential delay (max 3 attempts).

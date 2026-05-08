@@ -13,12 +13,16 @@ This fork adds four hard gates to the default squad behavior. They are enforced 
 
 1. **🧑‍💻 Developer-in-the-loop** — A new `developer` member ([charter](./.squad/agents/developer/charter.md)) gates every plan and every change. No agent may execute a plan, merge, push, transition a Jira issue, or run destructive commands without an explicit `Approved-by: developer` recorded in `.squad/decisions.md`.
 2. **🔴🟢🟦 TDD always** — Every code-bearing task follows red → green → refactor. A failing test must be committed (or its failure captured) **before** any production code. PRs include either the failing-test commit SHA or a CI link. See the *TDD Discipline* ceremony in [`.squad/ceremonies.md`](./.squad/ceremonies.md).
-3. **🎫 Jira on-prem (PAT) integration** — A new `jiracom` member ([charter](./.squad/agents/jiracom/charter.md)) owns Jira ticket lifecycle, backed by the new [`atlassian-rest`](./.squad-templates/skills/atlassian-rest/SKILL.md) skill. The skill is **on-prem only** (Jira Server / Data Center, `/rest/api/2/*`, Bearer PAT auth). One-time setup:
+3. **🎫 Jira on-prem (PAT) integration** — A new `jiracom` member ([charter](./.squad/agents/jiracom/charter.md)) owns Jira ticket lifecycle, backed by the new [`atlassian-rest`](./.squad-templates/skills/atlassian-rest/SKILL.md) skill. The skill is **on-prem only** (Jira Server / Data Center, `/rest/api/2/*`, Bearer PAT auth). Authenticate via the new `squad jira auth` command — modeled after `gh auth login`:
    ```bash
-   node .squad/skills/atlassian-rest/scripts/setup.mjs
-   # prompts for JIRA_BASE_URL and JIRA_PAT, writes .squad/.env (chmod 600, gitignored)
+   squad jira auth login                 # interactive: prompts for URL + PAT, verifies, writes .squad/.env
+   squad jira auth status                # show current auth, masked token
+   squad jira auth logout                # remove credentials
+
+   # non-interactive (CI / scripts):
+   echo "$JIRA_PAT" | squad jira auth login --base-url https://jira.example.com --token-stdin
    ```
-   Confluence is intentionally out of scope in this fork — Jira only.
+   Credentials land in `.squad/.env` (chmod 600, gitignored). Confluence is intentionally out of scope in this fork — Jira only.
 4. **📚 Always-on Documentation/KB** — `handbook` is upgraded to an always-on member that runs after every task. Merges are blocked if docs / knowledge-base entries are missing.
 
 These are seeded into new projects via `.squad-templates/` (used by `squad init`) and applied to this repo's own self-hosted team in `.squad/`.
