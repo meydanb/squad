@@ -2,6 +2,53 @@
 
 All notable changes to this project will be documented in this file.
 
+> 🔱 **This is the [meydanb/squad](https://github.com/meydanb/squad) fork.**
+> Entries under [Fork divergence](#fork-divergence--meydanbsquad) below are specific to this fork and are not present in the upstream [bradygaster/squad](https://github.com/bradygaster/squad). All other entries (`[Unreleased]` and earlier releases) are inherited from upstream.
+
+## [Fork divergence — `meydanb/squad`]
+
+> Forked from [bradygaster/squad@`v0.9.4`](https://github.com/bradygaster/squad/releases/tag/v0.9.4) on 2026-05-08. The four changes below introduce **hard gates** that apply to every task in this fork — they cannot be disabled per-task and they replace the corresponding upstream defaults.
+
+### Added — Developer-in-the-loop hard gate
+- **New `developer` member** at `.squad/agents/developer/` representing the real human user. Owns plan approval, change approval, destructive-action approval, and final escalation.
+- **Developer Approval ceremony** in `.squad/ceremonies.md` — every plan and every change requires explicit `Approved-by: developer` recorded in `.squad/decisions.md` (via `.squad/decisions/inbox/`) before any code, push, merge, or ticket transition.
+- **`copilot-instructions.md` enforcement** — @copilot and all members must wait on developer approval; "silence ≠ consent."
+- Mirrored into `.squad-templates/` so `squad init` seeds the gate into new projects.
+
+### Added — TDD hard gate (red → green → refactor)
+- **TDD Discipline ceremony** in `.squad/ceremonies.md` — failing test must exist before any production code.
+- **PR evidence requirement** — failing-test commit SHA must precede the implementation commit, OR a CI link showing the test failed first, OR a recorded local run.
+- **`tdd-exempt` label** introduced for docs-only / config-only / typo PRs (must be justified in the PR body).
+- "Tests added after the fact" now triggers a retrospective.
+
+### Added — Jira on-prem (PAT) integration
+- **New `jiracom` member** at `.squad/agents/jiracom/` — owns Jira ticket lifecycle, JQL queries, and PR↔ticket linkage.
+- **New `atlassian-rest` skill** at `.squad-templates/skills/atlassian-rest/` (mirrored to `.squad/skills/atlassian-rest/`), ported from [bmad-labs/skills](https://github.com/bmad-labs/skills/blob/main/skills/atlassian-rest/SKILL.md) and modified for **on-prem only**:
+  - **Auth:** `Authorization: Bearer <PAT>` (cloud original used Basic email+token).
+  - **API version:** `/rest/api/2/*` (cloud original used `/rest/api/3/*` with ADF JSON).
+  - **Description format:** wiki markup or plain text (no ADF).
+  - **Env vars:** `JIRA_BASE_URL`, `JIRA_PAT` (loaded from `.squad/.env`, gitignored, chmod 600).
+  - **`scripts/setup.mjs`** — interactive one-time setup; verifies credentials against `/rest/api/2/myself` before writing `.env`.
+  - **`scripts/jira.mjs`** — CLI surface: `search`, `get`, `create`, `edit`, `comment`, `transitions`, `transition`, `link`. Includes 429 backoff (3 attempts, exponential).
+- **Jira Sync ceremony** in `.squad/ceremonies.md` — auto-comment PR link on ticket pickup, transition on merge.
+- **Confluence intentionally out of scope** in this fork (compared to the bmad-labs original, which includes both).
+
+### Changed — Handbook upgraded to always-on Documentation/KB owner
+- **`.squad/agents/handbook/charter.md`** — role expanded from "SDK Usability" to "Documentation & Knowledge Base owner; SDK Usability." Mode switched to **always-on**: spawned automatically on every task close.
+- **Documentation Refresh ceremony** in `.squad/ceremonies.md` — Handbook scans every diff for changes to public API, config, behavior, or workflow; updates docs in the same PR or files a blocker comment.
+- **Knowledge base distinction** — Handbook owns `history.md` for institutional how-tos and gotchas; decisions still belong to Scribe.
+- **Sign-off format** required in PR body: `Approved-by: handbook` plus a list of docs touched (or justification for none).
+
+### Changed — Roster, copilot-instructions, and team.md
+- `.squad/roster.md` and `.squad-templates/roster.md` — added an "Always-On Members" section listing Developer, Handbook, JiraCom, Scribe, Ralph as mandatory in every casting.
+- `.squad/copilot-instructions.md` and `.squad-templates/copilot-instructions.md` — added a "Hard Gates" preamble; PR template now requires developer-approval link, TDD evidence, docs-touched list, and Jira ticket key.
+- `.squad/team.md` — Developer and JiraCom rows added; Handbook re-tagged as 📚 Always-on.
+
+### Notes
+- All four gates apply to **every** member, including @copilot.
+- The fork does **not** modify the upstream CLI / SDK behavior; changes are confined to `.squad-templates/` (seeded by `squad init`) and `.squad/` (this repo's self-hosted team).
+- See [`README.md` → Customizations in this fork](README.md#customizations-in-this-fork) for a user-facing summary.
+
 ## [Unreleased]
 
 ### Fixed
